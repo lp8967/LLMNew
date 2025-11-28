@@ -11,7 +11,7 @@ CHROMA_DB_PATH = os.getenv("CHROMA_DB_PATH", "/app/chroma_db")
 COLLECTION_NAME = "arxiv_papers_2020"
 
 # LLM Model
-LLM_MODEL = "gemini-pro"
+LLM_MODEL = "gemini-1.5-pro"
 
 # RAG Settings
 TOP_K_RESULTS = 3
@@ -39,4 +39,5 @@ GEMINI_SAFETY_SETTINGS = [
         "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
         "threshold": "BLOCK_MEDIUM_AND_ABOVE"
     }
+
 ]
