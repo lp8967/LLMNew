@@ -91,7 +91,21 @@ main() {
     # Инициализация БД
     initialize_database || exit 1
     
-    # Запуск бэкенда
+    # ЗАПУСК ФРОНТЕНДА ПЕРВЫМ
+    echo "=== STARTING FRONTEND ==="
+    cd /app
+    streamlit run frontend/app.py \
+        --server.port=8501 \
+        --server.address=0.0.0.0 \
+        --server.headless=true \
+        --server.enableCORS=false \
+        --server.enableXsrfProtection=false &
+    FRONTEND_PID=$!
+    
+    # Ждем немного перед запуском бэкенда
+    sleep 3
+    
+    # ЗАПУСК БЭКЕНДА
     echo "=== STARTING BACKEND ==="
     cd /app
     python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
@@ -108,15 +122,8 @@ main() {
         echo "Some tests failed, but continuing startup..."
     fi
     
-    # Запуск фронтенда
-    echo "=== STARTING FRONTEND ==="
-    cd /app
-    streamlit run frontend/app.py \
-        --server.port=8501 \
-        --server.address=0.0.0.0 \
-        --server.headless=true \
-        --server.enableCORS=false \
-        --server.enableXsrfProtection=false
+    # Ждем завершения фронтенда (основной процесс)
+    wait $FRONTEND_PID
     
     # Остановка бэкенда при завершении
     kill $BACKEND_PID 2>/dev/null || true
